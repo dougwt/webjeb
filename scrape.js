@@ -1,20 +1,27 @@
-const request = require('request');
+const got = require('got');
 const cheerio = require('cheerio');
 
 const URL_PREFIX = 'https://webjeb.mycodebytes.com/api';
 const WIKI_URL_PREFIX = 'https://wiki.kerbalspaceprogram.com';
 const CENTRAL_BODY = 'Kerbol';
 
-function scrapeSystem() {
-  request(`${WIKI_URL_PREFIX}/wiki/Kerbol_System`, (error, response, html) => {
-    if (error || response.statusCode != 200) {
-      console.error(`Error: ${error}`);
+async function scrapeSystem() {
+  try {
+    const response = await got(`${WIKI_URL_PREFIX}/wiki/Kerbol_System`);
+
+    if (response.statusCode != 200) {
       console.log(`Status: ${response.statusCode}`);
       console.log('Content-Type is:', response.caseless.get('Content-Type'));
       console.log(`Length: ${html.length}`);
-      return;
+      throw 'Invalid response code';
     }
 
+    return parseSystem(response.body);
+  } catch (error) {
+    console.error(`Error: ${error}`);
+  }
+
+  function parseSystem(html) {
     console.log('Success!');
     const $ = cheerio.load(html);
 
@@ -78,7 +85,7 @@ function scrapeSystem() {
       }
     });
     console.table(bodies);
-  });
+  }
 }
 
 scrapeSystem();
