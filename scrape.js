@@ -1,9 +1,12 @@
 const request = require('request');
 const cheerio = require('cheerio');
 
-request(
-  'https://wiki.kerbalspaceprogram.com/wiki/Kerbol_System',
-  (error, response, html) => {
+const URL_PREFIX = 'https://webjeb.mycodebytes.com/api';
+const WIKI_URL_PREFIX = 'https://wiki.kerbalspaceprogram.com';
+const CENTRAL_BODY = 'Kerbol';
+
+function scrapeSystem() {
+  request(`${WIKI_URL_PREFIX}/wiki/Kerbol_System`, (error, response, html) => {
     if (error || response.statusCode != 200) {
       console.error(`Error: ${error}`);
       console.log(`Status: ${response.statusCode}`);
@@ -27,24 +30,24 @@ request(
       const moons = planet.nextAll();
 
       if (name) {
-        if (name.toLowerCase() === 'kerbol') {
+        if (name.toLowerCase() === CENTRAL_BODY.toLowerCase()) {
           bodies.push({
             name,
             moons: null,
             aroundBody: null,
-            rel: `/bodies/${name.toLowerCase()}`,
-            link
+            rel: `${URL_PREFIX}/bodies/${name.toLowerCase()}`,
+            source: `${WIKI_URL_PREFIX}${link}`
           });
         } else {
           bodies.push({
             name,
             moons: [],
             aroundBody: {
-              body: 'kerbol',
-              rel: '/bodies/kerbol'
+              body: CENTRAL_BODY.toLowerCase(),
+              rel: `${URL_PREFIX}/bodies/${CENTRAL_BODY.toLowerCase()}`
             },
-            rel: `/bodies/${name.toLowerCase()}`,
-            link
+            rel: `${URL_PREFIX}/bodies/${name.toLowerCase()}`,
+            source: `${WIKI_URL_PREFIX}${link}`
           });
           currentIndex++;
         }
@@ -64,10 +67,10 @@ request(
               moons: [],
               aroundBody: {
                 body: name.toLowerCase(),
-                rel: `/bodies/${name.toLowerCase()}`
+                rel: `${URL_PREFIX}/bodies/${name.toLowerCase()}`
               },
-              rel: `/bodies/${moon.toLowerCase()}`,
-              link
+              rel: `${URL_PREFIX}/bodies/${moon.toLowerCase()}`,
+              source: `${WIKI_URL_PREFIX}${link}`
             });
           }
         });
@@ -75,5 +78,7 @@ request(
       }
     });
     console.table(bodies);
-  }
-);
+  });
+}
+
+scrapeSystem();
