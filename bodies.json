@@ -1,0 +1,23 @@
+{
+  "bodies": [
+    {
+      "id": "",
+      "name": "",
+      "moons": [
+        {
+          "moon": "",
+          "ref": ""
+        }
+      ],
+      "mass": "",
+      "radius": "",
+      "gravity": "",
+      "isPlanet": true,
+      "aroundBody": {
+        "body": "kerbol",
+        "rel": "/bodies/kerbol"
+      },
+      "rel": ""
+    }
+  ]
+}
