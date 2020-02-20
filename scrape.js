@@ -15,21 +15,18 @@ async function scrapeSystem() {
       console.log(`Length: ${html.length}`);
       throw 'Invalid response code';
     }
-
+    console.log('Success!');
     return parseSystem(response.body);
   } catch (error) {
     console.error(`Error: ${error}`);
   }
 
   function parseSystem(html) {
-    console.log('Success!');
     const $ = cheerio.load(html);
-
     const bodies = [];
-
-    const planetaryBodies = $('.mp-planetnav');
     let currentIndex = 0;
-    planetaryBodies.find('tr').each((i, el) => {
+
+    $('.mp-planetnav tr').each((i, el) => {
       const planet = $(el).find('td');
 
       const name = planet.find('.planetlabel a').attr('title');
@@ -60,7 +57,6 @@ async function scrapeSystem() {
         }
 
         moons.each((j, el) => {
-          // console.log(el);
           const moon = $(el)
             .find('.planetlabel a')
             .attr('title');
@@ -84,8 +80,11 @@ async function scrapeSystem() {
         currentIndex += moons.length;
       }
     });
-    console.table(bodies);
+    return bodies;
   }
 }
 
-scrapeSystem();
+(async () => {
+  const bodies = await scrapeSystem();
+  console.table(bodies);
+})();
