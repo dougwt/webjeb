@@ -19,50 +19,102 @@ module.exports = applyMiddleware([withMongoose], (req, res) => {
   }
 });
 
-async function fetchSystem() {
-  // Retrieve cached source record from database
-  const SOURCE_URL = `${appConfig.wikiUrlPrefix}/wiki/Kerbol_System`;
-  const source = await Source.findOne({ url: SOURCE_URL });
+/**
+ * Returns a list of planetary bodies in the Kerbol system
+ *
+ * @returns {Object[]} The list of `Body` objects representing planetary bodies
+ */
+function fetchSystem() {
+  // Retrieve cached source for Kerbol System wiki page
+  let response = fetchSource(`${appConfig.wikiUrlPrefix}/wiki/Kerbol_System`);
 
-  // If record does not exist, scrape source url and cache response body
-  // TODO: add timestamp field and determine when outdated cache should be updated
-  if (!source) {
-    console.log(
-      `Cache for source '${SOURCE_URL}' does not exist. We should fetch it.`
-    );
+  // Parse response body and generate list of system bodies
+  let bodies = parseSystem(response);
 
-    // Scrape the SOURCE_URL and store response body in sources db
-    scrapeSource(SOURCE_URL, response => {
-      console.log(`Successfully scraped source: ${SOURCE_URL}`);
-      const newSource = new Source({
-        url: SOURCE_URL,
-        responseBody: response.body
-      }).save();
-    });
-  }
-  console.log(`Using cached source: ${source.url}`);
-  // TODO: Parse response body into list of system bodies
-  // TODO: Scrape details for each body
-  // TODO: Return list of bodies
-  return [];
+  bodies.each(body => {
+    // Retrieve cached source for each planetary body's wiki page
+    let response = fetchSource(body.rel);
+
+    // Parse response body and update list of system bodies
+    bodies = parseBody(response, bodies);
+  });
+
+  // TODO: Store Body objects in the database so
+  // we don't have to generate them each time
+
+  return bodies;
 }
 
-async function scrapeSource(source, callback) {
-  try {
-    const response = await got(source);
+/**
+ * Returns the (cached if available) response body for the provided URL
+ *
+ * @param {string} url The URL to be scraped
+ * @return {string} The response body of the scraped URL
+ */
+async function fetchSource(url) {
+  const source = await Source.findOne({ url });
 
+  // If record DNE or expired, scrape source url and cache response body
+  // TODO: add timestamp field and determine when cache should be updated
+  if (!source) {
+    if (!source) {
+      console.log(
+        `Cache for source '${SOURCE_URL}' does not exist. We should fetch it.`
+      );
+    } else if (source.expired) {
+      console.log(
+        `Cache for source '${SOURCE_URL}' is expired. We should fetch it.`
+      );
+    }
+
+    return scrapeSource(SOURCE_URL);
+  } else {
+    console.log(`Using cached source: ${source.url}`);
+
+    return source.responseBody;
+  }
+}
+
+/**
+ * Scrapes the provided URL and caches the response body
+ *
+ * @param {string} url The URL to be scraped
+ * @returns {string} The response body of the scraped URL
+ */
+async function scrapeSource(url) {
+  try {
+    // Scrape the URL
+    const response = await got(url);
+
+    // Ensure correct status code
     if (response.statusCode != 200) {
       console.log(`Status: ${response.statusCode}`);
       console.log('Content-Type is:', response.caseless.get('Content-Type'));
       console.log(`Length: ${html.length}`);
       throw 'Invalid response code';
     }
-    return callback(response);
+
+    console.log(`Successfully scraped source: ${url}`);
+
+    // Cache the response body
+    // TODO: replace with upsert
+    const newSource = new Source({
+      url,
+      responseBody: response.body
+    }).save();
+
+    return response.body;
   } catch (error) {
     console.error(`Error: ${error}`);
   }
 }
 
+/**
+ * Converts provided Kerbol System html into barebones list of planetary bodies
+ *
+ * @param {string} html The html of the Kerbol System wiki page
+ * @returns {Object[]} The barebones list of planetary bodies
+ */
 function parseSystem(html) {
   const $ = cheerio.load(html);
   const bodies = [];
@@ -125,4 +177,14 @@ function parseSystem(html) {
     }
   });
   return bodies;
+}
+
+/**
+ * Update planetary bodies list with details from wiki page html
+ *
+ * @param {string} html The html of the planetary body's wiki page
+ * @returns {Object[]} The updated list of planetary bodies
+ */
+function parseBody(html, bodies) {
+  // TODO: do thing
 }
