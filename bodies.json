@@ -6,10 +6,13 @@
       "moons": [
         {
           "moon": "",
-          "ref": ""
+          "rel": ""
         }
       ],
-      "mass": "",
+      "mass": {
+        "massValue": 2.4,
+        "massExponent": 16
+      },
       "radius": "",
       "gravity": "",
       "isPlanet": true,

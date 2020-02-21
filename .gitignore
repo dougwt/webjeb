@@ -22,3 +22,8 @@ logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+
+# for local now dev
+.now
+.env
