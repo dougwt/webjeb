@@ -34,13 +34,13 @@ async function fetchSystem() {
   // Parse response body and generate list of system bodies
   let bodies = parseSystem(response);
 
-  // bodies.forEach(body => {
-  //   // Retrieve cached source for each planetary body's wiki page
-  //   let response = fetchSource(body.rel);
+  for (const body of bodies) {
+    // Retrieve cached source for each planetary body's wiki page
+    let response = await fetchSource(body.source);
 
-  //   // Parse response body and update list of system bodies
-  //   bodies = parseBody(response, bodies);
-  // });
+    // Parse response body and update list of system bodies
+    bodies = parseBody(response, bodies);
+  }
 
   // TODO: Store Body objects in the database so
   // we don't have to generate them each time
