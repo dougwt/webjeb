@@ -60,15 +60,14 @@ async function fetchSource(url) {
     let responseBody;
     const source = await Source.findOne({ url });
     // If record DNE or expired, scrape source url and cache response body
-    // TODO: add timestamp field and determine when cache should be updated
-    if (!source) {
+    if (!source || source.expired) {
       if (!source) {
         console.log(
           `Cache for source '${url}' does not exist. We should fetch it.`
         );
       } else if (source.expired) {
         console.log(
-          `Cache for source '${url}' is expired. We should fetch it.`
+          `Cache for source '${url}' has expired. We should fetch it.`
         );
       }
       responseBody = await scrapeSource(url);
@@ -81,6 +80,7 @@ async function fetchSource(url) {
     return responseBody;
   } catch (error) {
     console.log('Unable to fetch source');
+    console.error(error);
   }
 }
 
