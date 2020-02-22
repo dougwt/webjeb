@@ -34,12 +34,13 @@ async function fetchSystem() {
   // Parse response body and generate list of system bodies
   let bodies = parseSystem(response);
 
+  let index = 0;
   for (const body of bodies) {
     // Retrieve cached source for each planetary body's wiki page
     let response = await fetchSource(body.source);
 
-    // Parse response body and update list of system bodies
-    bodies = parseBody(response, bodies);
+    // Parse response body and update planetary body
+    bodies[index++] = parseBody(response, body);
   }
 
   // TODO: Store Body objects in the database so
@@ -174,8 +175,8 @@ function generateSun(name, link) {
     name,
     moons: null,
     aroundBody: null,
-    rel: `${appConfig.urlprefix}/bodies/${name.toLowerCase()}`,
-    source: `${appConfig.wikiUrlPrefix}${link}`
+    source: `${appConfig.wikiUrlPrefix}${link}`,
+    rel: `${appConfig.urlPrefix}/bodies/${name.toLowerCase()}`
   };
 }
 
@@ -193,11 +194,11 @@ function generatePlanet(name, link) {
     aroundBody: {
       body: appConfig.centralBody.toLowerCase(),
       rel: `${
-        appConfig.urlprefix
+        appConfig.urlPrefix
       }/bodies/${appConfig.centralBody.toLowerCase()}`
     },
-    rel: `${appConfig.urlprefix}/bodies/${name.toLowerCase()}`,
-    source: `${appConfig.wikiUrlPrefix}${link}`
+    source: `${appConfig.wikiUrlPrefix}${link}`,
+    rel: `${appConfig.urlPrefix}/bodies/${name.toLowerCase()}`
   };
 }
 
@@ -217,8 +218,8 @@ function generateMoon(name, parent, link) {
       body: parent.toLowerCase(),
       rel: `${appConfig.urlPrefix}/bodies/${parent.toLowerCase()}`
     },
-    rel: `${appConfig.urlPrefix}/bodies/${name.toLowerCase()}`,
-    source: `${appConfig.wikiUrlPrefix}${link}`
+    source: `${appConfig.wikiUrlPrefix}${link}`,
+    rel: `${appConfig.urlPrefix}/bodies/${name.toLowerCase()}`
   };
 }
 
@@ -228,7 +229,50 @@ function generateMoon(name, parent, link) {
  * @param {string} html The html of the planetary body's wiki page
  * @returns {Object[]} The updated list of planetary bodies
  */
-function parseBody(html, bodies) {
-  // TODO: do thing
-  return bodies;
+function parseBody(html, body) {
+  const $ = cheerio.load(html);
+
+  const { name, moons, aroundBody, ...rest } = body;
+
+  const mass = {
+    massValue: parseFloat(
+      $('a[title="w:Mass"]')
+        .parent()
+        .next()
+        .find('span')
+        .text()
+    ),
+    massExponent: parseInt(
+      $('a[title="w:Mass"]')
+        .parent()
+        .next()
+        .find('sup')
+        .text()
+    )
+  };
+  const radius = parseInt(
+    $('a[title="w:Radius"]')
+      .parent()
+      .next()
+      .find('span')
+      .text()
+      .replace(/\s/g, '')
+  );
+  const gravity = parseFloat(
+    $('a[title="w:Surface gravity"]')
+      .parent()
+      .next()
+      .find('span')
+      .text()
+  );
+
+  return {
+    name,
+    moons,
+    aroundBody,
+    mass,
+    radius,
+    gravity,
+    ...rest
+  };
 }
