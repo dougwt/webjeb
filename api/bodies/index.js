@@ -1,9 +1,9 @@
 const got = require('got');
 const cheerio = require('cheerio');
-const Source = require('../models/Source');
-const { applyMiddleware, RequestError } = require('../lib/applyMiddleware');
-const withMongoose = require('../lib/withMongoose');
-const appConfig = require('../lib/appConfig');
+const Source = require('../../models/Source');
+const { applyMiddleware, RequestError } = require('../../lib/applyMiddleware');
+const withMongoose = require('../../lib/withMongoose');
+const appConfig = require('../../lib/appConfig');
 
 module.exports = applyMiddleware([withMongoose], async (req, res) => {
   if (req.method !== 'GET') {
@@ -168,7 +168,7 @@ function parseSystem(html) {
  *
  * @param {string} name The name of the star
  * @param {string} link The source link for the star
- * @returns
+ * @returns The object describing the Sun
  */
 function generateSun(name, link) {
   return {
@@ -185,7 +185,7 @@ function generateSun(name, link) {
  *
  * @param {string} name The name of the planet
  * @param {string} link The source link for the planet
- * @returns
+ * @returns The object describing the planet
  */
 function generatePlanet(name, link) {
   return {
@@ -208,7 +208,7 @@ function generatePlanet(name, link) {
  * @param {string} name The name of the moon
  * @param {string} parent The name of the moon's planet
  * @param {string} link The source link for the moon
- * @returns
+ * @returns The object describing the moon
  */
 function generateMoon(name, parent, link) {
   return {
