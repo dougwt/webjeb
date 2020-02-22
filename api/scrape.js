@@ -5,14 +5,15 @@ const { applyMiddleware, RequestError } = require('../lib/applyMiddleware');
 const withMongoose = require('../lib/withMongoose');
 const appConfig = require('../lib/appConfig');
 
-module.exports = applyMiddleware([withMongoose], (req, res) => {
+module.exports = applyMiddleware([withMongoose], async (req, res) => {
   if (req.method !== 'GET') {
     throw new RequestError(404, 'Unsupported request method');
   }
 
   try {
-    const bodies = fetchSystem();
+    const bodies = await fetchSystem();
     console.table(bodies);
+    res.json(bodies);
   } catch (err) {
     throw err;
     throw new RequestError(500, 'Unable to query database');
@@ -24,20 +25,22 @@ module.exports = applyMiddleware([withMongoose], (req, res) => {
  *
  * @returns {Object[]} The list of `Body` objects representing planetary bodies
  */
-function fetchSystem() {
+async function fetchSystem() {
   // Retrieve cached source for Kerbol System wiki page
-  let response = fetchSource(`${appConfig.wikiUrlPrefix}/wiki/Kerbol_System`);
+  let response = await fetchSource(
+    `${appConfig.wikiUrlPrefix}/wiki/Kerbol_System`
+  );
 
   // Parse response body and generate list of system bodies
   let bodies = parseSystem(response);
 
-  bodies.each(body => {
-    // Retrieve cached source for each planetary body's wiki page
-    let response = fetchSource(body.rel);
+  // bodies.forEach(body => {
+  //   // Retrieve cached source for each planetary body's wiki page
+  //   let response = fetchSource(body.rel);
 
-    // Parse response body and update list of system bodies
-    bodies = parseBody(response, bodies);
-  });
+  //   // Parse response body and update list of system bodies
+  //   bodies = parseBody(response, bodies);
+  // });
 
   // TODO: Store Body objects in the database so
   // we don't have to generate them each time
@@ -52,26 +55,31 @@ function fetchSystem() {
  * @return {string} The response body of the scraped URL
  */
 async function fetchSource(url) {
-  const source = await Source.findOne({ url });
-
-  // If record DNE or expired, scrape source url and cache response body
-  // TODO: add timestamp field and determine when cache should be updated
-  if (!source) {
+  try {
+    let responseBody;
+    const source = await Source.findOne({ url });
+    // If record DNE or expired, scrape source url and cache response body
+    // TODO: add timestamp field and determine when cache should be updated
     if (!source) {
-      console.log(
-        `Cache for source '${SOURCE_URL}' does not exist. We should fetch it.`
-      );
-    } else if (source.expired) {
-      console.log(
-        `Cache for source '${SOURCE_URL}' is expired. We should fetch it.`
-      );
+      if (!source) {
+        console.log(
+          `Cache for source '${url}' does not exist. We should fetch it.`
+        );
+      } else if (source.expired) {
+        console.log(
+          `Cache for source '${url}' is expired. We should fetch it.`
+        );
+      }
+      responseBody = await scrapeSource(url);
+    } else {
+      console.log(`Using cached source: ${source.url}`);
+
+      responseBody = source.responseBody;
     }
 
-    return scrapeSource(SOURCE_URL);
-  } else {
-    console.log(`Using cached source: ${source.url}`);
-
-    return source.responseBody;
+    return responseBody;
+  } catch (error) {
+    console.log('Unable to fetch source');
   }
 }
 
@@ -129,30 +137,14 @@ function parseSystem(html) {
 
     if (name) {
       if (name.toLowerCase() === appConfig.centralBody.toLowerCase()) {
-        bodies.push({
-          name,
-          moons: null,
-          aroundBody: null,
-          rel: `${appConfig.urlprefix}/bodies/${name.toLowerCase()}`,
-          source: `${appConfig.wiki}${link}`
-        });
+        bodies.push(generateSun(name, link));
       } else {
-        bodies.push({
-          name,
-          moons: [],
-          aroundBody: {
-            body: appConfig.centralBody.toLowerCase(),
-            rel: `${
-              appConfig.urlprefix
-            }/bodies/${appConfig.centralBody.toLowerCase()}`
-          },
-          rel: `${appConfig.urlprefix}/bodies/${name.toLowerCase()}`,
-          source: `${appConfig.wiki}${link}`
-        });
+        bodies.push(generatePlanet(name, link));
         currentIndex++;
       }
 
       moons.each((j, el) => {
+        const parent = name;
         const moon = $(el)
           .find('.planetlabel a')
           .attr('title');
@@ -161,22 +153,73 @@ function parseSystem(html) {
           .attr('href');
         if (moon) {
           bodies[currentIndex].moons.push({ moon, link });
-          bodies.push({
-            name: moon,
-            moons: [],
-            aroundBody: {
-              body: name.toLowerCase(),
-              rel: `${appConfig.urlPrefix}/bodies/${name.toLowerCase()}`
-            },
-            rel: `${appConfig.urlPrefix}/bodies/${moon.toLowerCase()}`,
-            source: `${appConfig.wikiUrlPrefix}${link}`
-          });
+          bodies.push(generateMoon(moon, parent, link));
         }
       });
       currentIndex += moons.length;
     }
   });
   return bodies;
+}
+
+/**
+ * Generates a object representing the Sun
+ *
+ * @param {string} name The name of the star
+ * @param {string} link The source link for the star
+ * @returns
+ */
+function generateSun(name, link) {
+  return {
+    name,
+    moons: null,
+    aroundBody: null,
+    rel: `${appConfig.urlprefix}/bodies/${name.toLowerCase()}`,
+    source: `${appConfig.wikiUrlPrefix}${link}`
+  };
+}
+
+/**
+ * Generates an object representing a planet
+ *
+ * @param {string} name The name of the planet
+ * @param {string} link The source link for the planet
+ * @returns
+ */
+function generatePlanet(name, link) {
+  return {
+    name,
+    moons: [],
+    aroundBody: {
+      body: appConfig.centralBody.toLowerCase(),
+      rel: `${
+        appConfig.urlprefix
+      }/bodies/${appConfig.centralBody.toLowerCase()}`
+    },
+    rel: `${appConfig.urlprefix}/bodies/${name.toLowerCase()}`,
+    source: `${appConfig.wikiUrlPrefix}${link}`
+  };
+}
+
+/**
+ * Generates an object representing a moon
+ *
+ * @param {string} name The name of the moon
+ * @param {string} parent The name of the moon's planet
+ * @param {string} link The source link for the moon
+ * @returns
+ */
+function generateMoon(name, parent, link) {
+  return {
+    name,
+    moons: [],
+    aroundBody: {
+      body: parent.toLowerCase(),
+      rel: `${appConfig.urlPrefix}/bodies/${parent.toLowerCase()}`
+    },
+    rel: `${appConfig.urlPrefix}/bodies/${name.toLowerCase()}`,
+    source: `${appConfig.wikiUrlPrefix}${link}`
+  };
 }
 
 /**
@@ -187,4 +230,5 @@ function parseSystem(html) {
  */
 function parseBody(html, bodies) {
   // TODO: do thing
+  return bodies;
 }
