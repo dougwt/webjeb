@@ -12,7 +12,7 @@ const sourceSchema = new Schema(
 );
 
 sourceSchema.virtual('expired').get(function() {
-  return this.updatedAt.getTime() + appConfig.expiration_ms >= Date.now();
+  return this.updatedAt.getTime() + appConfig.expiration_ms < Date.now();
 });
 
 const Source = mongoose.model('sources', sourceSchema);
