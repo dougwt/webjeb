@@ -106,11 +106,11 @@ async function scrapeSource(url) {
     console.log(`Successfully scraped source: ${url}`);
 
     // Cache the response body
-    // TODO: replace with upsert
-    const newSource = new Source({
-      url,
-      responseBody: response.body
-    }).save();
+    await Source.findOneAndUpdate(
+      { url },
+      { responseBody: response.body },
+      { upsert: true }
+    );
 
     return response.body;
   } catch (error) {
