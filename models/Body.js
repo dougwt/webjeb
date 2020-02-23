@@ -6,6 +6,7 @@ const { Schema } = mongoose;
 const bodySchema = new Schema(
   {
     name: String,
+    name_lower: { type: String, index: true },
     moons: [
       {
         moon: String,

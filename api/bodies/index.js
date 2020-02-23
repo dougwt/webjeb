@@ -9,13 +9,7 @@ module.exports = applyMiddleware([withMongoose], async (req, res) => {
       throw new RequestError(404, 'Unsupported request method');
     }
 
-    console.log('Searching for bodies...');
-
-    let bodies = await Body.find({});
-
-    console.table(bodies);
-
-    bodies = bodies.map(
+    const bodies = (await Body.find({})).map(
       ({
         name,
         moons,

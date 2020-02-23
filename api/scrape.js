@@ -293,6 +293,7 @@ function parseBody(html, body) {
 
   return {
     name,
+    name_lower: name.toLowerCase(),
     moons,
     equatorialRadius,
     mass,
