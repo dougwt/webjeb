@@ -5,7 +5,6 @@ const { Schema } = mongoose;
 
 const bodySchema = new Schema(
   {
-    id: String,
     name: String,
     moons: [
       {
