@@ -250,7 +250,7 @@ function parseBody(html, body) {
         .text()
     )
   };
-  const radius = parseInt(
+  const equatorialRadius = parseInt(
     $('a[title="w:Radius"]')
       .parent()
       .next()
@@ -258,7 +258,7 @@ function parseBody(html, body) {
       .text()
       .replace(/\s/g, '')
   );
-  const gravity = parseFloat(
+  const surfaceGravity = parseFloat(
     $('a[title="w:Surface gravity"]')
       .parent()
       .next()
@@ -269,10 +269,10 @@ function parseBody(html, body) {
   return {
     name,
     moons,
-    aroundBody,
+    equatorialRadius,
     mass,
-    radius,
-    gravity,
+    surfaceGravity,
+    aroundBody,
     ...rest
   };
 }

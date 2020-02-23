@@ -5,6 +5,7 @@ const { Schema } = mongoose;
 
 const bodySchema = new Schema(
   {
+    id: String,
     name: String,
     moons: [
       {
@@ -12,16 +13,58 @@ const bodySchema = new Schema(
         rel: String
       }
     ],
-    aroundBody: {
-      body: String,
-      rel: String
-    },
+    // orbit: {
+    //   // semimajorAxis
+    //   // periapsis
+    //   // apoapsis
+    //   // orbitalEccentricity
+    //   // orbitalInclination
+    //   // argumentOfPeriapsis
+    //   // longitudeOfAscendingNode
+    //   // meanAnomoly
+    //   // sideralOrbitalPeriod
+    //   // synodicOrbitalPeriod
+    // },
+    equatorialRadius: Number,
+    // equitorialCircumference
+    // surfaceArea: {
+    //   // areaValue
+    //   // areaExponent
+    // },
     mass: {
       massValue: Number,
       massExponent: Number
     },
-    radius: Number,
-    gravity: Number,
+    // standardGravitationalParameter
+    // density
+    surfaceGravity: Number,
+    // escapeVelocity
+    // siderealRotationPeriod
+    // solarDay
+    // siderealRotationalVelocity
+    // synchronousOrbit
+    // sphereOfInfluence
+    // atmosphere: {
+    //   // atmospherePresent
+    //   // atmosphericPressure
+    //   // atmosphericHeight
+    //   // temperatureMin
+    //   // temperatureMax
+    //   // oxygenPresent
+    // },
+    // scientificMultiplier: {
+    //   // surface
+    //   // splashed
+    //   // lowerAtmosphere
+    //   // upperAtmosphere
+    //   // nearSpace
+    //   // outerSpace
+    //   // recovery
+    // },
+    aroundBody: {
+      body: String,
+      rel: String
+    },
     source: String,
     rel: String
   },
