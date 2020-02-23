@@ -1,6 +1,7 @@
 const got = require('got');
 const cheerio = require('cheerio');
 const Source = require('../models/Source');
+const Body = require('../models/Body');
 const { applyMiddleware, RequestError } = require('../lib/applyMiddleware');
 const withMongoose = require('../lib/withMongoose');
 const appConfig = require('../lib/appConfig');
@@ -47,17 +48,23 @@ async function fetchSystem() {
   // Parse response body and generate list of system bodies
   let bodies = parseSystem(response);
 
-  let index = 0;
-  for (const body of bodies) {
-    // Retrieve cached source for each planetary body's wiki page
-    let { _, response } = await fetchSource(body.source);
+  if (updated) {
+    let index = 0;
+    for (let body of bodies) {
+      // Retrieve cached source for each planetary body's wiki page
+      let { _, response } = await fetchSource(body.source);
 
-    // Parse response body and update planetary body
-    bodies[index++] = parseBody(response, body);
+      // Parse response body and update planetary body
+      body = parseBody(response, body);
+      bodies[index++] = body;
+
+      // Store Body objects in the database so
+      // we don't have to generate them each time
+      const { name, ...rest } = body;
+      await Body.findOneAndUpdate({ name }, { ...rest }, { upsert: true });
+      console.log(`Database record updated for '${name}'`);
+    }
   }
-
-  // TODO: Store Body objects in the database so
-  // we don't have to generate them each time
 
   return { updated, bodies };
 }
