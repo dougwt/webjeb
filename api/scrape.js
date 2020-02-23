@@ -167,7 +167,10 @@ function parseSystem(html) {
           .find('.planetlabel a')
           .attr('href');
         if (moon) {
-          bodies[currentIndex].moons.push({ moon, link });
+          bodies[currentIndex].moons.push({
+            moon,
+            rel: `${appConfig.urlPrefix}/bodies/${moon.toLowerCase()}`
+          });
           bodies.push(generateMoon(moon, parent, link));
         }
       });
