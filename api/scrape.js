@@ -3,37 +3,40 @@ const cheerio = require('cheerio');
 const Source = require('../models/Source');
 const Body = require('../models/Body');
 const { applyMiddleware, RequestError } = require('../lib/applyMiddleware');
+const logger = require('../lib/logger');
+const withLogger = require('../lib/withLogger');
 const withMongoose = require('../lib/withMongoose');
 const appConfig = require('../lib/appConfig');
 
-// TODO: cleanup console statements
+module.exports = applyMiddleware(
+  [withLogger, withMongoose],
+  async (req, res) => {
+    const start = new Date().getTime();
+    if (req.method !== 'GET') {
+      throw new RequestError(404, 'Unsupported request method');
+    }
 
-module.exports = applyMiddleware([withMongoose], async (req, res) => {
-  const start = new Date().getTime();
-  if (req.method !== 'GET') {
-    throw new RequestError(404, 'Unsupported request method');
+    try {
+      const { updated, bodies } = await fetchSystem();
+      const end = new Date().getTime();
+      const executionTime = end - start;
+
+      logger.debug(`Total execution time: ${executionTime} ms`);
+      logger.debug(bodies);
+
+      res.json({
+        success: true,
+        updated,
+        executionTime
+      });
+    } catch (err) {
+      res.json({
+        success: false,
+        error: err
+      });
+    }
   }
-
-  try {
-    const { updated, bodies } = await fetchSystem();
-    const end = new Date().getTime();
-    const executionTime = end - start;
-
-    console.log(`Total execution time: ${executionTime} ms`);
-    console.table(bodies);
-
-    res.json({
-      success: true,
-      updated,
-      executionTime
-    });
-  } catch (err) {
-    res.json({
-      success: false,
-      error: err
-    });
-  }
-});
+);
 
 /**
  * Returns a list of planetary bodies in the Kerbol system
@@ -63,7 +66,7 @@ async function fetchSystem() {
       // we don't have to generate them each time
       const { name, ...rest } = body;
       await Body.findOneAndUpdate({ name }, { ...rest }, { upsert: true });
-      console.log(`Database record updated for '${name}'`);
+      logger.debug(`Database record updated for '${name}'`);
     }
   }
 
@@ -84,25 +87,25 @@ async function fetchSource(url) {
     // If record DNE or expired, scrape source url and cache response body
     if (!source || source.expired) {
       if (!source) {
-        console.log(
+        logger.debug(
           `Cache for source '${url}' does not exist. We should fetch it.`
         );
       } else if (source.expired) {
-        console.log(
+        logger.debug(
           `Cache for source '${url}' has expired. We should fetch it.`
         );
       }
       updated = true;
       responseBody = await scrapeSource(url);
     } else {
-      console.log(`Using cached source: ${source.url}`);
+      logger.debug(`Using cached source: ${source.url}`);
 
       responseBody = source.responseBody;
     }
     return { updated, response: responseBody };
   } catch (error) {
-    console.log('Unable to fetch source');
-    console.error(error);
+    logger.debug('Unable to fetch source');
+    logger.error(error);
   }
 }
 
@@ -119,13 +122,13 @@ async function scrapeSource(url) {
 
     // Ensure correct status code
     if (response.statusCode != 200) {
-      console.log(`Status: ${response.statusCode}`);
-      console.log('Content-Type is:', response.caseless.get('Content-Type'));
-      console.log(`Length: ${html.length}`);
+      logger.debug(`Status: ${response.statusCode}`);
+      logger.debug('Content-Type is:', response.caseless.get('Content-Type'));
+      logger.debug(`Length: ${html.length}`);
       throw 'Invalid response code';
     }
 
-    console.log(`Successfully scraped source: ${url}`);
+    logger.debug(`Successfully scraped source: ${url}`);
 
     // Cache the response body
     await Source.findOneAndUpdate(
@@ -136,7 +139,8 @@ async function scrapeSource(url) {
 
     return response.body;
   } catch (error) {
-    console.error(`Error: ${error}`);
+    // TODO: handle this better
+    logger.error(`Error: ${error}`);
   }
 }
 

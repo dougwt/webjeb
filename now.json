@@ -1,6 +1,7 @@
 {
   "env": {
     "NODE_ENV": "production",
-    "MONGO_URI": "@webjeb-mongo-connection"
+    "MONGO_URI": "@webjeb-mongo-connection",
+    "LOGDNA_INGESTION_KEY": "@webjeb-logdna-ingestion-key"
   }
 }
