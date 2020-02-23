@@ -1,22 +1,35 @@
 const got = require('got');
 const cheerio = require('cheerio');
-const Source = require('../../models/Source');
-const { applyMiddleware, RequestError } = require('../../lib/applyMiddleware');
-const withMongoose = require('../../lib/withMongoose');
-const appConfig = require('../../lib/appConfig');
+const Source = require('../models/Source');
+const { applyMiddleware, RequestError } = require('../lib/applyMiddleware');
+const withMongoose = require('../lib/withMongoose');
+const appConfig = require('../lib/appConfig');
 
 module.exports = applyMiddleware([withMongoose], async (req, res) => {
+  const start = new Date().getTime();
   if (req.method !== 'GET') {
     throw new RequestError(404, 'Unsupported request method');
   }
 
   try {
-    const bodies = await fetchSystem();
+    const { updated, bodies } = await fetchSystem();
+    const end = new Date().getTime();
+    const executionTime = end - start;
+
+    console.log(`Total execution time: ${executionTime} ms`);
     console.table(bodies);
-    res.json(bodies);
+
+    res.json({
+      success: true,
+      updated,
+      executionTime,
+      bodies
+    });
   } catch (err) {
-    throw err;
-    throw new RequestError(500, 'Unable to query database');
+    res.json({
+      success: false,
+      error: err
+    });
   }
 });
 
@@ -27,7 +40,7 @@ module.exports = applyMiddleware([withMongoose], async (req, res) => {
  */
 async function fetchSystem() {
   // Retrieve cached source for Kerbol System wiki page
-  let response = await fetchSource(
+  let { updated, response } = await fetchSource(
     `${appConfig.wikiUrlPrefix}/wiki/Kerbol_System`
   );
 
@@ -37,7 +50,7 @@ async function fetchSystem() {
   let index = 0;
   for (const body of bodies) {
     // Retrieve cached source for each planetary body's wiki page
-    let response = await fetchSource(body.source);
+    let { _, response } = await fetchSource(body.source);
 
     // Parse response body and update planetary body
     bodies[index++] = parseBody(response, body);
@@ -46,7 +59,7 @@ async function fetchSystem() {
   // TODO: Store Body objects in the database so
   // we don't have to generate them each time
 
-  return bodies;
+  return { updated, bodies };
 }
 
 /**
@@ -57,6 +70,7 @@ async function fetchSystem() {
  */
 async function fetchSource(url) {
   try {
+    let updated = false;
     let responseBody;
     const source = await Source.findOne({ url });
     // If record DNE or expired, scrape source url and cache response body
@@ -70,14 +84,14 @@ async function fetchSource(url) {
           `Cache for source '${url}' has expired. We should fetch it.`
         );
       }
+      updated = true;
       responseBody = await scrapeSource(url);
     } else {
       console.log(`Using cached source: ${source.url}`);
 
       responseBody = source.responseBody;
     }
-
-    return responseBody;
+    return { updated, response: responseBody };
   } catch (error) {
     console.log('Unable to fetch source');
     console.error(error);
