@@ -6,6 +6,8 @@ const { applyMiddleware, RequestError } = require('../lib/applyMiddleware');
 const withMongoose = require('../lib/withMongoose');
 const appConfig = require('../lib/appConfig');
 
+// TODO: cleanup console statements
+
 module.exports = applyMiddleware([withMongoose], async (req, res) => {
   const start = new Date().getTime();
   if (req.method !== 'GET') {
@@ -23,8 +25,7 @@ module.exports = applyMiddleware([withMongoose], async (req, res) => {
     res.json({
       success: true,
       updated,
-      executionTime,
-      bodies
+      executionTime
     });
   } catch (err) {
     res.json({
