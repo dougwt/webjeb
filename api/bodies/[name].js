@@ -14,6 +14,7 @@ module.exports = applyMiddleware([withMongoose], async (req, res) => {
     const body = await Body.findOne({ name_lower: id.toLowerCase() });
     console.log('result:', body);
 
+    // Nicely format the planetary body
     let {
       name,
       moons,
@@ -22,8 +23,17 @@ module.exports = applyMiddleware([withMongoose], async (req, res) => {
       surfaceGravity,
       aroundBody,
       source
-      // rel
+      // rel  // disabled b/c this would just link to itself
     } = body;
+
+    moons = moons
+      ? moons.map(({ moon, rel }) => {
+          return {
+            moon,
+            rel
+          };
+        })
+      : null;
 
     return res.json({
       name,
@@ -33,7 +43,7 @@ module.exports = applyMiddleware([withMongoose], async (req, res) => {
       surfaceGravity,
       aroundBody,
       source
-      // rel
+      // rel  // disabled b/c this would just link to itself
     });
   } catch (error) {
     throw new RequestError(500, 'Unable to query database');
