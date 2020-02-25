@@ -1,0 +1,189 @@
+openapi: 3.0.0
+info:
+  title: Kerbal Solar System API
+  description: A simple API for planetary bodies in Kerbal Space Program
+  version: 0.1.0
+servers:
+  - url: 'https://webjeb.mycodebytes.com/api'
+    description: Production
+  - url: 'https://webjeb.dougwt.now.sh/api'
+    description: Staging
+  - url: 'http://localhost:3000/api'
+    description: Local
+paths:
+  '/bodies/{name}':
+    get:
+      description: Retrieve information for a single planetary body with a specific name in the KSP solar system.
+      tags:
+        - Bodies
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Body'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error404'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error500'
+      operationId: fetchBody
+      summary: Retrieve a planetary body by name
+    parameters:
+      - $ref: '#/components/parameters/name'
+  /bodies:
+    get:
+      description: Retrieve information for every planetary body in the KSP solar system.
+      tags:
+        - Bodies
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArrayOfBodies'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error500'
+      operationId: fetchAllBodies
+      summary: Retrieve all planetary bodies
+  /scrape:
+    get:
+      description: Prompt the server to scrape the source wiki for updated information.
+      tags:
+        - Utility
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                    description: Whether or not the scrape request was received
+                  updated:
+                    type: boolean
+                    default: false
+                    description: Whether or not the scrape was performed based on cache expiration timestamp
+                  executionTime:
+                    type: integer
+                    description: Total time in milliseconds it took to process the request
+                    example: '605'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error500'
+      operationId: scrapeBodies
+      summary: Check for updated source info
+components:
+  schemas:
+    Body:
+      type: object
+      description: A single planetary body in the KSP solar system
+      properties:
+        name:
+          type: string
+          example: Kerbin
+        moons:
+          type: object
+          properties:
+            moon:
+              type: string
+              example: Mun
+            rel:
+              type: string
+              format: uri
+              example: 'https://webjeb.mycodebytes.com/api/bodies/mun'
+        equatorialRadius:
+          type: integer
+          format: int32
+          example: '600000'
+        mass:
+          type: object
+          properties:
+            massValue:
+              type: number
+              format: float
+              example: '5.2915158'
+            massExponent:
+              type: integer
+              format: int32
+              example: '22'
+        surfaceGravity:
+          type: number
+          format: float
+          example: '9.81'
+        aroundBody:
+          type: object
+          properties:
+            body:
+              type: string
+              example: kerbol
+            rel:
+              type: string
+              format: uri
+              example: 'https://webjeb.mycodebytes.com/api/bodies/kerbol'
+        source:
+          type: string
+          format: uri
+          example: 'https://wiki.kerbalspaceprogram.com/wiki/Kerbin'
+        rel:
+          type: string
+          format: uri
+          example: 'https://webjeb.mycodebytes.com/api/bodies/kerbol'
+      required:
+        - name
+    ArrayOfBodies:
+      type: array
+      description: A list of planetary bodies in the KSP solar system
+      items:
+        $ref: '#/components/schemas/Body'
+    Error404:
+      type: object
+      properties:
+        error:
+          type: string
+          example: A planetary body with the specified name was not found
+      required:
+        - error
+    Error500:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Unable to connect to database
+      required:
+        - error
+  parameters:
+    name:
+      name: name
+      in: path
+      description: 'The name of a planetary body in the KSP solar system.'
+      required: true
+      schema:
+        type: string
+        example: Kerbin
+tags:
+  - name: Bodies
+    description: Planetary bodies in the KSP solar system
+  - name: Utility
+externalDocs:
+  description: GitHub Repository
+  url: https://github.com/dougwt/webjeb
