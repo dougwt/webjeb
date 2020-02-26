@@ -1,11 +1,12 @@
 const Body = require('../../models/Body');
 const { applyMiddleware, RequestError } = require('../../lib/applyMiddleware');
 const logger = require('../../lib/logger');
+const withCORS = require('../../lib/withCORS');
 const withLogger = require('../../lib/withLogger');
 const withMongoose = require('../../lib/withMongoose');
 
 module.exports = applyMiddleware(
-  [withLogger, withMongoose],
+  [withCORS, withLogger, withMongoose],
   async (req, res) => {
     try {
       if (req.method !== 'GET') {
