@@ -11,6 +11,26 @@ servers:
   - url: 'http://localhost:3000/api'
     description: Local
 paths:
+  /bodies/:
+    get:
+      description: Retrieve information for every planetary body in the KSP solar system.
+      tags:
+        - Bodies
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArrayOfBodies'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error500'
+      operationId: fetchAllBodies
+      summary: Retrieve all planetary bodies
   '/bodies/{name}/':
     get:
       description: Retrieve information for a single planetary body with a specific name in the KSP solar system.
@@ -39,26 +59,6 @@ paths:
       summary: Retrieve a planetary body by name
     parameters:
       - $ref: '#/components/parameters/name'
-  /bodies/:
-    get:
-      description: Retrieve information for every planetary body in the KSP solar system.
-      tags:
-        - Bodies
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ArrayOfBodies'
-        '500':
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error500'
-      operationId: fetchAllBodies
-      summary: Retrieve all planetary bodies
   /scrape/:
     get:
       description: Prompt the server to scrape the source wiki for updated information.
