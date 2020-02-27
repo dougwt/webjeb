@@ -4,6 +4,6 @@
     "MONGO_URI": "@webjeb-mongo-connection",
     "LOGDNA_INGESTION_KEY": "@webjeb-logdna-ingestion-key"
   },
-  "trailingSlash": true,
-  "cleanUrls": true
+  "cleanUrls": true,
+  "trailingSlash": true
 }
