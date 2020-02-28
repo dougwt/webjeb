@@ -1,4 +1,5 @@
 const Body = require('../../models/Body');
+// const logger = require('../../lib/logger');
 const { applyMiddleware, RequestError } = require('../../lib/applyMiddleware');
 const withCORS = require('../../lib/withCORS');
 const withLogger = require('../../lib/withLogger');
@@ -12,6 +13,11 @@ module.exports = applyMiddleware(
       if (req.method !== 'GET') {
         throw new RequestError(404, 'Unsupported request method');
       }
+
+      // const proto = req.headers['x-forwarded-proto'];
+      // const host = req.headers['x-forwarded-host'];
+      // const hostname = `${proto}://${host}`;
+      // logger.info({ hostname });
 
       let bodies = await Body.find({});
 
