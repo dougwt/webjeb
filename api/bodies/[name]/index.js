@@ -33,7 +33,7 @@ module.exports = applyMiddleware(async (req, res) => {
       ? moons.map(({ moon, rel }) => {
           return {
             moon,
-            rel
+            rel: `${req.hostname}${rel}`
           };
         })
       : null;

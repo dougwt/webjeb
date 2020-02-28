@@ -28,7 +28,7 @@ module.exports = applyMiddleware(async (req, res) => {
         ? moons.map(({ moon, rel }) => {
             return {
               moon,
-              rel
+              rel: `${req.hostname}${rel}`
             };
           })
         : null;
@@ -41,7 +41,7 @@ module.exports = applyMiddleware(async (req, res) => {
         surfaceGravity,
         aroundBody,
         source,
-        rel
+        rel: `${req.hostname}${rel}`
       };
     });
 
