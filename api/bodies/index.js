@@ -9,11 +9,6 @@ module.exports = applyMiddleware(async (req, res) => {
       throw new RequestError(404, 'Unsupported request method');
     }
 
-    // const proto = req.headers['x-forwarded-proto'];
-    // const host = req.headers['x-forwarded-host'];
-    // const hostname = `${proto}://${host}`;
-    // logger.info({ hostname });
-
     let bodies = await Body.find({});
 
     bodies = bodies.map(body => {
