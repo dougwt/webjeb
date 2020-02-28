@@ -4,39 +4,34 @@ const Source = require('../models/Source');
 const Body = require('../models/Body');
 const { applyMiddleware, RequestError } = require('../lib/applyMiddleware');
 const logger = require('../lib/logger');
-const withLogger = require('../lib/withLogger');
-const withMongoose = require('../lib/withMongoose');
 const appConfig = require('../lib/appConfig');
 
-module.exports = applyMiddleware(
-  [withLogger, withMongoose],
-  async (req, res) => {
-    const start = new Date().getTime();
-    if (req.method !== 'GET') {
-      throw new RequestError(404, 'Unsupported request method');
-    }
-
-    try {
-      const { updated, bodies } = await fetchSystem();
-      const end = new Date().getTime();
-      const executionTime = end - start;
-
-      logger.debug(`Total execution time: ${executionTime} ms`);
-      logger.debug(bodies);
-
-      res.json({
-        success: true,
-        updated,
-        executionTime
-      });
-    } catch (err) {
-      res.json({
-        success: false,
-        error: err
-      });
-    }
+module.exports = applyMiddleware(async (req, res) => {
+  const start = new Date().getTime();
+  if (req.method !== 'GET') {
+    throw new RequestError(404, 'Unsupported request method');
   }
-);
+
+  try {
+    const { updated, bodies } = await fetchSystem();
+    const end = new Date().getTime();
+    const executionTime = end - start;
+
+    logger.debug(`Total execution time: ${executionTime} ms`);
+    logger.debug(bodies);
+
+    res.json({
+      success: true,
+      updated,
+      executionTime
+    });
+  } catch (err) {
+    res.json({
+      success: false,
+      error: err
+    });
+  }
+});
 
 /**
  * Returns a list of planetary bodies in the Kerbol system
