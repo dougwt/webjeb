@@ -39,12 +39,12 @@ module.exports = applyMiddleware(async (req, res) => {
         })
       : null;
 
-    aroundBody = aroundBody
-      ? {
-          body: aroundBody.body,
-          rel: `${req.hostname}${appConfig.apiPathPrefix}${aroundBody.rel}`
-        }
-      : null;
+    if (aroundBody && aroundBody.body && aroundBody.rel) {
+      aroundBody = {
+        body: aroundBody.body,
+        rel: `${req.hostname}${appConfig.apiPathPrefix}${aroundBody.rel}`
+      };
+    }
 
     return res.json({
       name,
