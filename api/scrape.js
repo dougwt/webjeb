@@ -176,7 +176,7 @@ function parseSystem(html) {
         if (moon) {
           bodies[currentIndex].moons.push({
             moon,
-            rel: `${appConfig.urlPrefix}/bodies/${moon.toLowerCase()}`
+            rel: `/bodies/${moon.toLowerCase()}`
           });
           bodies.push(generateMoon(moon, parent, link));
         }
@@ -200,7 +200,7 @@ function generateSun(name, link) {
     moons: null,
     aroundBody: null,
     source: `${appConfig.wikiUrlPrefix}${link}`,
-    rel: `${appConfig.urlPrefix}/bodies/${name.toLowerCase()}`
+    rel: `/bodies/${name.toLowerCase()}`
   };
 }
 
@@ -217,12 +217,10 @@ function generatePlanet(name, link) {
     moons: [],
     aroundBody: {
       body: appConfig.centralBody.toLowerCase(),
-      rel: `${
-        appConfig.urlPrefix
-      }/bodies/${appConfig.centralBody.toLowerCase()}`
+      rel: `/bodies/${appConfig.centralBody.toLowerCase()}`
     },
     source: `${appConfig.wikiUrlPrefix}${link}`,
-    rel: `${appConfig.urlPrefix}/bodies/${name.toLowerCase()}`
+    rel: `/bodies/${name.toLowerCase()}`
   };
 }
 
@@ -240,10 +238,10 @@ function generateMoon(name, parent, link) {
     moons: [],
     aroundBody: {
       body: parent.toLowerCase(),
-      rel: `${appConfig.urlPrefix}/bodies/${parent.toLowerCase()}`
+      rel: `/bodies/${parent.toLowerCase()}`
     },
     source: `${appConfig.wikiUrlPrefix}${link}`,
-    rel: `${appConfig.urlPrefix}/bodies/${name.toLowerCase()}`
+    rel: `/bodies/${name.toLowerCase()}`
   };
 }
 

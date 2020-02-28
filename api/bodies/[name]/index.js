@@ -4,6 +4,7 @@ const {
   RequestError
 } = require('../../../lib/applyMiddleware');
 const logger = require('../../../lib/logger');
+const appConfig = require('../../../lib/appConfig');
 
 module.exports = applyMiddleware(async (req, res) => {
   try {
@@ -33,9 +34,16 @@ module.exports = applyMiddleware(async (req, res) => {
       ? moons.map(({ moon, rel }) => {
           return {
             moon,
-            rel: `${req.hostname}${rel}`
+            rel: `${req.hostname}${appConfig.apiPathPrefix}${rel}`
           };
         })
+      : null;
+
+    aroundBody = aroundBody
+      ? {
+          body: aroundBody.body,
+          rel: `${req.hostname}${appConfig.apiPathPrefix}${aroundBody.rel}`
+        }
       : null;
 
     return res.json({

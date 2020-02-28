@@ -28,9 +28,16 @@ module.exports = applyMiddleware(async (req, res) => {
         ? moons.map(({ moon, rel }) => {
             return {
               moon,
-              rel: `${req.hostname}${rel}`
+              rel: `${req.hostname}${appConfig.apiPathPrefix}${rel}`
             };
           })
+        : null;
+
+      aroundBody = aroundBody
+        ? {
+            body: aroundBody.body,
+            rel: `${req.hostname}${appConfig.apiPathPrefix}${aroundBody.rel}`
+          }
         : null;
 
       return {
@@ -41,7 +48,7 @@ module.exports = applyMiddleware(async (req, res) => {
         surfaceGravity,
         aroundBody,
         source,
-        rel: `${req.hostname}${rel}`
+        rel: `${req.hostname}${appConfig.apiPathPrefix}${rel}`
       };
     });
 
