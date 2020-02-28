@@ -110,7 +110,7 @@ components:
             rel:
               type: string
               format: uri
-              example: 'https://webjeb.mycodebytes.com/api/bodies/mun'
+              example: 'https://webjeb.mycodebytes.com/api/bodies/mun/'
         equatorialRadius:
           type: integer
           format: int32
@@ -139,7 +139,7 @@ components:
             rel:
               type: string
               format: uri
-              example: 'https://webjeb.mycodebytes.com/api/bodies/kerbol'
+              example: 'https://webjeb.mycodebytes.com/api/bodies/kerbol/'
         source:
           type: string
           format: uri
@@ -147,7 +147,7 @@ components:
         rel:
           type: string
           format: uri
-          example: 'https://webjeb.mycodebytes.com/api/bodies/kerbol'
+          example: 'https://webjeb.mycodebytes.com/api/bodies/kerbol/'
       required:
         - name
     ArrayOfBodies:

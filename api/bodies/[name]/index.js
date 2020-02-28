@@ -34,7 +34,7 @@ module.exports = applyMiddleware(async (req, res) => {
       ? moons.map(({ moon, rel }) => {
           return {
             moon,
-            rel: `${req.hostname}${appConfig.apiPathPrefix}${rel}`
+            rel: `${req.hostname}${appConfig.apiPathPrefix}${rel}/`
           };
         })
       : null;
@@ -42,7 +42,7 @@ module.exports = applyMiddleware(async (req, res) => {
     if (aroundBody && aroundBody.body && aroundBody.rel) {
       aroundBody = {
         body: aroundBody.body,
-        rel: `${req.hostname}${appConfig.apiPathPrefix}${aroundBody.rel}`
+        rel: `${req.hostname}${appConfig.apiPathPrefix}${aroundBody.rel}/`
       };
     }
 
