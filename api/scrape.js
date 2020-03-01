@@ -18,7 +18,7 @@ module.exports = applyMiddleware(async (req, res) => {
     const executionTime = end - start;
 
     logger.debug(`Total execution time: ${executionTime} ms`);
-    logger.debug(bodies);
+    // logger.debug(bodies);
 
     res.json({
       success: true,
