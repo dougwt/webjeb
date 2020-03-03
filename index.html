@@ -7,5 +7,78 @@
   </head>
   <body>
     <p>You probably want to go <a href="/api/">here</a>.</p>
+
+    <hr />
+
+    <script>
+      fetch('/api/bodies/')
+        .then(response => response.json())
+        .then(bodies => {
+          bodies.forEach(body => console.log(body));
+        });
+    </script>
+
+    <!-- 
+      - Delta-v for Hohmann Transfer Orbit Changes
+          - inputs
+              - body
+              - lower altitude (km)
+              - higher altitude (km)
+          - outputs
+              - burn 1 (m/s)
+              - burn 2 (m/s)
+              - total (m/s)
+      - Dark/Light orbital time
+          - inputs
+              - altitude (km)
+          - outputs
+              - dark time (s)
+              - light time (s)
+      - Electrical usage
+    -->
+
+    <h1>Features</h1>
+    <h2>Delta-v for Hohmann Transfer Orbit Changes</h2>
+    <ul>
+      <li>
+        inputs:
+        <ul>
+          <li>body</li>
+          <li>lower altitude (km)</li>
+          <li>higher altitude (km)</li>
+        </ul>
+      </li>
+      <li>
+        ouputs:
+        <ul>
+          <li>burn 1 (m/s)</li>
+          <li>burn 2 (m/s)</li>
+          <li>total (m/s)</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h2>Dark/Light orbital time</h2>
+    <ul>
+      <li>
+        inputs:
+        <ul>
+          <li>body</li>
+          <li>altitude (m)</li>
+        </ul>
+      </li>
+      <li>
+        ouputs:
+        <ul>
+          <li>dark time (s)</li>
+          <li>light time (s)</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h2>Electrical usage</h2>
+    <ul>
+      <li>TBD</li>
+    </ul>
   </body>
 </html>
