@@ -38,7 +38,33 @@
     -->
 
     <h1>Features</h1>
-    <h2>Delta-v for Hohmann Transfer Orbit Changes</h2>
+    <form action="#">
+      <fieldset>
+        <legend>Delta-v for Hohmann transfer orbital changes</legend>
+
+        <p>
+          <label for="planet">Planetary body:</label>
+          <select name="planet" id="planet">
+            <option value="">Loading...</option>
+          </select>
+        </p>
+
+        <p>
+          <label for="lower">Lower altitude:</label>
+          <input type="text" id="lower" /> km
+        </p>
+
+        <p>
+          <label for="higher">Higher altitude:</label>
+          <input type="text" id="higher" /> km
+        </p>
+
+        <p>
+          <button>Submit</button>
+          <button type="reset">Clear</button>
+        </p>
+      </fieldset>
+    </form>
     <ul>
       <li>
         inputs:
