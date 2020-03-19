@@ -1,7 +1,25 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
+import DeltaVCalculator from './DeltaVCalculator';
+import useDropdown from './useDropdown';
 
 function App() {
+  const [bodies, setBodies] = useState([]);
+  const [body, BodyDropdown, setBody] = useDropdown(
+    'Planetary Body',
+    '',
+    bodies
+  );
+
+  useEffect(() => {
+    setBodies([]);
+    setBody('');
+
+    fetch('/api/bodies/')
+      .then(response => response.json())
+      .then(data => setBodies(data));
+  }, [setBody]);
+
   return (
     <div className="App">
       <header>
@@ -18,14 +36,10 @@ function App() {
           .
         </p>
 
-        <p>
-          To begin, select a planetary body...
-          <select name="bodies" id="body-select">
-            <option value="">Loading...</option>
-          </select>
-        </p>
+        <p>To begin, select a planetary body...</p>
+        <BodyDropdown />
 
-        <p>
+        {/* <p>
           ...and a calculator...
           <ul>
             <li>
@@ -35,36 +49,10 @@ function App() {
               <a href="#">Orbital period &amp; darkness time</a>
             </li>
           </ul>
-        </p>
+        </p> */}
       </header>
 
-      <form action="#">
-        <fieldset>
-          <legend>Delta-v for Hohmann transfer orbital changes</legend>
-
-          <p>
-            <label for="planet">Planetary body:</label>
-            <select name="planet" id="planet">
-              <option value="">Loading...</option>
-            </select>
-          </p>
-
-          <p>
-            <label for="lower">Lower altitude:</label>
-            <input type="text" id="lower" /> km
-          </p>
-
-          <p>
-            <label for="higher">Higher altitude:</label>
-            <input type="text" id="higher" /> km
-          </p>
-
-          <p>
-            <button>Submit</button>
-            <button type="reset">Clear</button>
-          </p>
-        </fieldset>
-      </form>
+      {/* <DeltaVCalculator /> */}
     </div>
   );
 }
