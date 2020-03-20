@@ -7,15 +7,6 @@ function DeltaVCalculator() {
         <legend>Delta-v for Hohmann transfer orbital changes</legend>
 
         <p>
-          <label htmlFor="planet">
-            Planetary body:
-            <select name="planet" id="planet">
-              <option value="">Loading...</option>
-            </select>
-          </label>
-        </p>
-
-        <p>
           <label htmlFor="lower">
             Lower altitude:
             <input type="text" id="lower" /> km
