@@ -1,6 +1,6 @@
 import React from 'react';
-import './App.css';
 import ToolWidget from './ToolWidget';
+import './App.css';
 
 function App() {
   return (
