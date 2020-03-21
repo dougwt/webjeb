@@ -6,7 +6,7 @@ const useDropdown = (label, defaultState, options) => {
 
   const Dropdown = () => (
     <label htmlFor={id}>
-      {label}
+      {label}:&nbsp;
       <select
         id={id}
         value={state}
