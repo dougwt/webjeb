@@ -20,7 +20,7 @@ function App() {
         </p>
       </header>
 
-      <ToolWidget />
+      <ToolWidget defaultValue="Kerbin" />
     </div>
   );
 }

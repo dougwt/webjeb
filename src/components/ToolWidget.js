@@ -2,22 +2,29 @@ import React, { useState, useEffect } from 'react';
 import DeltaVCalculator from './DeltaVCalculator';
 import useDropdown from './useDropdown';
 
-function ToolWidget() {
+function ToolWidget(props) {
+  const { defaultValue } = props;
   const [bodies, setBodies] = useState([]);
   const [body, BodyDropdown, setBody] = useDropdown(
     'Planetary Body',
-    '',
+    defaultValue,
     bodies
   );
 
   useEffect(() => {
+    console.log('Fetching api data...');
     setBodies([]);
     setBody('');
 
     fetch('/api/bodies/')
       .then(response => response.json())
-      .then(data => setBodies(data));
-  }, [setBody]);
+      .then(data => {
+        setBodies(data);
+        console.table(data);
+        setBody(defaultValue);
+        console.log(`Selecting default Planetary Value: ${defaultValue}`);
+      });
+  }, [setBody, defaultValue]);
 
   if (!bodies || bodies.length < 1) {
     return <div>Loading...</div>;
