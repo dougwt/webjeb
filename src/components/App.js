@@ -6,18 +6,29 @@ function App() {
   return (
     <div className="App">
       <header>
-        <h1>webjeb</h1>
+        <section className="hero">
+          <div className="hero-body">
+            <div className="container">
+              <h1 className="title">webjeb</h1>
+              <h2 className="subtitle">Tagline</h2>
+            </div>
+          </div>
+        </section>
 
-        <p>
-          <span className="hello">Hello</span>, and welcome to the experimental
-          test site for a small collection of handy calculators for use with
-          Kerbal Space Program. This site is powered by a{' '}
-          <a href="/api/">
-            publicly available API containing community-sourced info about the
-            Kerbol solar system
-          </a>
-          .
-        </p>
+        <section className="section">
+          <div className="container">
+            <p>
+              <span className="hello">Hello</span>, and welcome to the
+              experimental test site for a small collection of handy calculators
+              for use with Kerbal Space Program. This site is powered by a{' '}
+              <a href="/api/">
+                publicly available API containing community-sourced info about
+                the Kerbol solar system
+              </a>
+              .
+            </p>
+          </div>
+        </section>
       </header>
 
       <ToolWidget defaultValue="Kerbin" />

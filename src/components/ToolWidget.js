@@ -27,27 +27,35 @@ function ToolWidget(props) {
   }, [setBody, defaultValue]);
 
   if (!bodies || bodies.length < 1) {
-    return <div>Loading...</div>;
+    return (
+      <section className="section">
+        <div className="container">Loading...</div>
+      </section>
+    );
   }
 
   return (
-    <div>
-      <p>To begin, select a planetary body...</p>
-      <BodyDropdown />
+    <section className="section">
+      <div className="container">
+        {/* <p>To begin, select a planetary body...</p> */}
+        <BodyDropdown />
 
-      <p>...and a calculator...</p>
+        {/* <p>Then choose a calculator...</p> */}
 
-      <ul>
-        <li>
-          <a href="#">Required delta-v for Hohmann transfer</a>
-        </li>
-        <li>
-          <a href="#">Orbital period &amp; darkness time</a>
-        </li>
-      </ul>
+        <div className="tabs is-boxed">
+          <ul>
+            <li className="is-active">
+              <a>Required delta-v for Hohmann transfer</a>
+            </li>
+            <li>
+              <a>Orbital period &amp; darkness time</a>
+            </li>
+          </ul>
+        </div>
 
-      <DeltaVCalculator />
-    </div>
+        <DeltaVCalculator />
+      </div>
+    </section>
   );
 }
 

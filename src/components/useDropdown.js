@@ -10,25 +10,34 @@ const useDropdown = (label, defaultState, options) => {
   };
 
   const Dropdown = () => (
-    <label htmlFor={id}>
-      {label}:&nbsp;
-      <select
-        id={id}
-        value={state}
-        onChange={e => updateValue(e.target.value)}
-        onBlur={e => updateValue(e.target.value)}
-        disabled={options && options.length && options.length === 0}
-      >
-        {options && options.map
-          ? options.map(({ name, aroundBody }) => (
-              <option key={name} value={name}>
-                {aroundBody && aroundBody.body !== 'kerbol' ? '-' : ''}
-                {name}
-              </option>
-            ))
-          : ''}
-      </select>
-    </label>
+    <div className="field">
+      <label className="label" htmlFor={id}>
+        {label}
+      </label>
+      <div className="control has-icons-left">
+        <div className="select">
+          <select
+            id={id}
+            value={state}
+            onChange={e => updateValue(e.target.value)}
+            onBlur={e => updateValue(e.target.value)}
+            disabled={options && options.length && options.length === 0}
+          >
+            {options && options.map
+              ? options.map(({ name, aroundBody }) => (
+                  <option key={name} value={name}>
+                    {aroundBody && aroundBody.body !== 'kerbol' ? '- ' : ''}
+                    {name}
+                  </option>
+                ))
+              : ''}
+          </select>
+        </div>
+        <span className="icon is-large is-left">
+          <i className="fas fa-globe" />
+        </span>
+      </div>
+    </div>
   );
 
   return [state, Dropdown, setState];
