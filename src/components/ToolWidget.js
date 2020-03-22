@@ -37,10 +37,10 @@ function ToolWidget(props) {
   return (
     <section className="section">
       <div className="container">
-        {/* <p>To begin, select a planetary body...</p> */}
         <BodyDropdown />
 
-        {/* <p>Then choose a calculator...</p> */}
+        {/*
+        <p>Then choose a calculator...</p>
 
         <div className="tabs is-boxed">
           <ul>
@@ -52,8 +52,20 @@ function ToolWidget(props) {
             </li>
           </ul>
         </div>
+        */}
 
-        <DeltaVCalculator />
+        <div className="tile is-ancestor">
+          <div className="tile is-6 is-parent">
+            <div className="tile is-child box">
+              <DeltaVCalculator />
+            </div>
+          </div>
+          <div className="tile is-6 is-parent">
+            <div className="tile is-child box">
+              <DeltaVCalculator />
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );

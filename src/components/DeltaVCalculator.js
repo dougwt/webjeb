@@ -4,26 +4,35 @@ function DeltaVCalculator() {
   return (
     <form action="#">
       <fieldset>
-        <legend>Delta-v for Hohmann transfer orbital changes</legend>
+        <legend className="title">
+          Delta-v for Hohmann transfer orbital changes
+        </legend>
 
-        <p>
-          <label htmlFor="lower">
-            Lower altitude:
-            <input type="text" id="lower" /> km
+        <div className="field">
+          <label className="label" htmlFor="lower">
+            Lower altitude (km)
           </label>
-        </p>
+          <div className="control">
+            <input className="input" type="text" id="lower" />
+          </div>
+        </div>
 
-        <p>
-          <label htmlFor="higher">
-            Higher altitude:
-            <input type="text" id="higher" /> km
+        <div className="field">
+          <label className="label" htmlFor="higher">
+            Higher altitude (km)
           </label>
-        </p>
+          <div className="control">
+            <input className="input" type="text" id="higher" />
+          </div>
+        </div>
 
-        <p>
-          <button type="submit">Submit</button>
-          <button type="reset">Clear</button>
-        </p>
+        <div className="field">
+          <div className="control">
+            <button className="button is-link is-pulled-right" type="submit">
+              Submit
+            </button>
+          </div>
+        </div>
       </fieldset>
     </form>
   );
