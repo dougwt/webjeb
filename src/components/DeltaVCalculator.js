@@ -8,21 +8,31 @@ function DeltaVCalculator() {
           Delta-v for Hohmann transfer orbital changes
         </legend>
 
-        <div className="field">
-          <label className="label" htmlFor="lower">
-            Lower altitude (km)
-          </label>
+        <label className="label" htmlFor="lower">
+          Lower altitude
+        </label>
+        <div className="field has-addons">
           <div className="control">
             <input className="input" type="text" id="lower" />
           </div>
+          <div className="control">
+            <button className="button is-static" type="button">
+              km
+            </button>
+          </div>
         </div>
 
-        <div className="field">
-          <label className="label" htmlFor="higher">
-            Higher altitude (km)
-          </label>
+        <label className="label" htmlFor="higher">
+          Higher altitude
+        </label>
+        <div className="field has-addons">
           <div className="control">
             <input className="input" type="text" id="higher" />
+          </div>
+          <div className="control">
+            <button className="button is-static" type="button">
+              km
+            </button>
           </div>
         </div>
 
