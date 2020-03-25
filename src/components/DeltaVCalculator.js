@@ -20,7 +20,7 @@ function DeltaVCalculator() {
             <input className="input" type="text" id={lowerId} />
           </div>
           <div className="control">
-            <button className="button is-static" type="button">
+            <button className="button is-static" type="button" tabIndex="-1">
               km
             </button>
           </div>
@@ -34,7 +34,7 @@ function DeltaVCalculator() {
             <input className="input" type="text" id={higherId} />
           </div>
           <div className="control">
-            <button className="button is-static" type="button">
+            <button className="button is-static" type="button" tabIndex="-1">
               km
             </button>
           </div>
