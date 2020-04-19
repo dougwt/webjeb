@@ -8,9 +8,12 @@ function DeltaVCalculator() {
   return (
     <form action="#">
       <fieldset>
-        <legend className="title">
-          Delta-v for Hohmann transfer orbital changes
-        </legend>
+        <legend className="title">Delta-v calculator</legend>
+
+        <div className="content">
+          Calculate the minimum delta-v required to complete a Hohmann transfer
+          from one circular orbit to another.
+        </div>
 
         <label className="label" htmlFor={lowerId}>
           Lower altitude
